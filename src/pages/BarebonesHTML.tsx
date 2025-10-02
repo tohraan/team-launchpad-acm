@@ -36,7 +36,7 @@ const BarebonesHTML = () => {
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
-      if (popups.length >= 15) {
+      if (popups.length >= 16) {
         setShowFinalPopup(true);
         clearInterval(spawnInterval);
         return;
@@ -54,8 +54,8 @@ const BarebonesHTML = () => {
 
       setTimeout(() => {
         setPopups(prev => prev.filter(p => p.id !== newPopup.id));
-      }, 3000 + Math.random() * 2000);
-    }, 1000 + Math.random() * 2000);
+      }, 2000 + Math.random() * 1000);
+    }, 200 + Math.random() * 100);
 
     return () => clearInterval(spawnInterval);
   }, [popups.length]);

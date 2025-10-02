@@ -10,26 +10,26 @@ const ProgressBar = () => {
   useEffect(() => {
     let currentProgress = 0;
     const interval = setInterval(() => {
-      // Evil stuttering logic
-      if (currentProgress >= 80 && currentProgress < 90 && Math.random() > 0.7) {
+      // Evil stuttering logic - jump backward at least twice
+      if (currentProgress >= 50 && currentProgress < 90 && Math.random() > 0.85) {
         currentProgress -= Math.floor(Math.random() * 10) + 5;
         currentProgress = Math.max(0, currentProgress);
       }
       
-      // Random pauses at specific points
+      // Random pauses at specific points (shorter pauses for 3 second total)
       const pausePoints = [25, 47, 68, 90];
-      if (pausePoints.includes(Math.floor(currentProgress)) && Math.random() > 0.5) {
+      if (pausePoints.includes(Math.floor(currentProgress)) && Math.random() > 0.8) {
         return;
       }
       
-      // Slow increment 0-90%
+      // Fast increment 0-90% (to reach in ~2.5 seconds)
       if (currentProgress < 90) {
-        currentProgress += Math.random() * 2;
+        currentProgress += Math.random() * 6 + 4;
         setText(["Starting Chaos...", "Loading Madness...", "Initializing Insanity..."][Math.floor(Math.random() * 3)]);
       } 
-      // Fast increment 90-99%
+      // Very fast increment 90-99%
       else if (currentProgress < 99) {
-        currentProgress += 5;
+        currentProgress += 8;
       }
       // Freeze at 99%
       else if (currentProgress >= 99) {
@@ -37,10 +37,10 @@ const ProgressBar = () => {
         setFlickering(true);
         setText("Almost There...");
         
-        // Complete after 2-3 seconds
+        // Complete after 0.5 seconds (total ~3 seconds)
         setTimeout(() => {
           navigate("/barebones");
-        }, 2500);
+        }, 500);
         clearInterval(interval);
       }
       

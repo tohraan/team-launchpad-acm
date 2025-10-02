@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProgressBar from "./pages/ProgressBar";
+import BarebonesHTML from "./pages/BarebonesHTML";
+import CookieTab from "./pages/CookieTab";
+import SnakeGame from "./pages/SnakeGame";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +19,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<ProgressBar />} />
+          <Route path="/barebones" element={<BarebonesHTML />} />
+          <Route path="/cookie" element={<CookieTab />} />
+          <Route path="/snake" element={<SnakeGame />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

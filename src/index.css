@@ -38,6 +38,23 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
+    /* Chaos Theme */
+    --toxic-green: 120 100% 63%;
+    --portal-blue: 190 100% 50%;
+    --chaos-purple: 280 60% 60%;
+    --windows-grey: 0 0% 75%;
+    --retro-blue: 210 100% 50%;
+    --glitch-red: 0 100% 50%;
+    
+    /* Gradients */
+    --gradient-chaos: linear-gradient(135deg, hsl(var(--toxic-green)), hsl(var(--portal-blue)));
+    --gradient-retro: linear-gradient(180deg, hsl(var(--retro-blue)), hsl(var(--chaos-purple)));
+    
+    /* Animations */
+    --transition-glitch: all 0.1s cubic-bezier(0.9, 0.1, 0.1, 0.9);
+
+    --radius: 0.5rem;
+
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -101,5 +118,43 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+@layer utilities {
+  .font-pixel {
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+  }
+  
+  .font-retro {
+    font-family: 'Courier New', monospace;
+  }
+  
+  .animate-glitch {
+    animation: glitch 0.3s infinite;
+  }
+  
+  .animate-flicker {
+    animation: flicker 0.5s infinite;
+  }
+  
+  @keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(2px, 2px); }
+  }
+  
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  .windows-border {
+    border: 2px outset hsl(var(--windows-grey));
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,0.8), inset -1px -1px 0 rgba(0,0,0,0.3);
   }
 }

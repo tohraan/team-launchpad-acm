@@ -35,8 +35,10 @@ const BarebonesHTML = () => {
   ];
 
   useEffect(() => {
+    let popupCount = 0;
+    
     const spawnInterval = setInterval(() => {
-      if (popups.length >= 16) {
+      if (popupCount >= 8) {
         setShowFinalPopup(true);
         clearInterval(spawnInterval);
         return;
@@ -45,20 +47,21 @@ const BarebonesHTML = () => {
       const newPopup: Popup = {
         id: Date.now() + Math.random(),
         text: popupTexts[Math.floor(Math.random() * popupTexts.length)],
-        x: Math.random() * (window.innerWidth - 300),
-        y: Math.random() * (window.innerHeight - 200),
+        x: Math.random() * (window.innerWidth - 400),
+        y: Math.random() * (window.innerHeight - 250),
         color: colors[Math.floor(Math.random() * colors.length)],
       };
 
       setPopups(prev => [...prev, newPopup]);
+      popupCount++;
 
       setTimeout(() => {
         setPopups(prev => prev.filter(p => p.id !== newPopup.id));
-      }, 2000 + Math.random() * 1000);
+      }, 3000);
     }, 200 + Math.random() * 100);
 
     return () => clearInterval(spawnInterval);
-  }, [popups.length]);
+  }, []);
 
   const dismissPopup = (id: number) => {
     setPopups(prev => prev.filter(p => p.id !== id));
@@ -78,7 +81,7 @@ const BarebonesHTML = () => {
       {popups.map(popup => (
         <div
           key={popup.id}
-          className="fixed border-2 border-black p-4 shadow-lg z-10 font-pixel text-xs"
+          className="fixed border-4 border-black p-6 shadow-2xl z-10 font-pixel text-sm min-w-[350px] animate-scale-in"
           style={{
             left: `${popup.x}px`,
             top: `${popup.y}px`,
@@ -87,37 +90,37 @@ const BarebonesHTML = () => {
           }}
         >
           <div className="flex justify-between items-start gap-4">
-            <p>{popup.text}</p>
+            <p className="text-base font-bold">{popup.text}</p>
             <button
               onClick={() => dismissPopup(popup.id)}
-              className="text-red-600 font-bold hover:text-red-800"
+              className="text-red-600 font-bold hover:text-red-800 text-lg"
             >
               ✖
             </button>
           </div>
-          <div className="mt-2 flex gap-2">
-            <button className="px-3 py-1 bg-blue-500 text-white text-xs">Yes</button>
-            <button className="px-3 py-1 bg-gray-500 text-white text-xs">No</button>
+          <div className="mt-4 flex gap-3">
+            <button className="px-4 py-2 bg-blue-500 text-white text-sm font-bold hover:bg-blue-600">Yes</button>
+            <button className="px-4 py-2 bg-gray-500 text-white text-sm font-bold hover:bg-gray-600">No</button>
           </div>
         </div>
       ))}
 
       {showFinalPopup && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-purple-400 to-pink-400 p-8 rounded-lg border-4 border-yellow-400 max-w-md animate-scale-in">
-            <h2 className="font-pixel text-xl mb-6 text-center">FINAL COOKIE CONSENT</h2>
-            <p className="font-retro mb-6 text-center text-lg">
-              We need your cookies to survive. Please?
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-gradient-to-br from-purple-400 to-pink-400 p-12 rounded-lg border-8 border-yellow-400 max-w-xl w-full mx-4 animate-scale-in shadow-2xl">
+            <h2 className="font-pixel text-3xl mb-8 text-center text-black animate-pulse">FINAL COOKIE CONSENT</h2>
+            <p className="font-retro mb-8 text-center text-xl text-black">
+              We need your cookies to survive. Please? 🍪
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-6 justify-center">
               <button
-                className="px-6 py-3 bg-green-500 text-white font-pixel text-sm hover:bg-green-600 rounded"
+                className="px-8 py-4 bg-green-500 text-white font-pixel text-lg hover:bg-green-600 rounded-lg shadow-lg hover:scale-105 transition-transform"
               >
                 Yes (Does Nothing)
               </button>
               <button
                 onClick={() => navigate("/cookie")}
-                className="px-6 py-3 bg-red-500 text-white font-pixel text-sm hover:bg-red-600 rounded"
+                className="px-8 py-4 bg-red-500 text-white font-pixel text-lg hover:bg-red-600 rounded-lg shadow-lg hover:scale-105 transition-transform"
               >
                 No
               </button>

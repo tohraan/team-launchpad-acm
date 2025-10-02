@@ -38,7 +38,7 @@ const BarebonesHTML = () => {
     let popupCount = 0;
     
     const spawnInterval = setInterval(() => {
-      if (popupCount >= 8) {
+      if (popupCount >= 12) {
         setShowFinalPopup(true);
         clearInterval(spawnInterval);
         return;

@@ -22,6 +22,7 @@ const SnakeGame = () => {
   const [showJobPopup, setShowJobPopup] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [gameTime, setGameTime] = useState(0);
+  const [triggerAppleCount] = useState(() => Math.floor(Math.random() * 6) + 1); // Random 1-6
   const gameLoopRef = useRef<NodeJS.Timeout>();
   const timerRef = useRef<NodeJS.Timeout>();
 
@@ -45,13 +46,13 @@ const SnakeGame = () => {
     };
   }, [isPaused, gameOver]);
 
-  // Show job application on 3rd apple
+  // Show job application on random apple count
   useEffect(() => {
-    if (appleCount === 3 && !showJobPopup) {
+    if (appleCount === triggerAppleCount && !showJobPopup) {
       setShowJobPopup(true);
       setIsPaused(true);
     }
-  }, [appleCount, showJobPopup]);
+  }, [appleCount, showJobPopup, triggerAppleCount]);
 
   // Generate random apple position
   const generateApple = (): Position => {
@@ -89,48 +90,63 @@ const SnakeGame = () => {
     // Draw snake (dark green blocks)
     ctx.fillStyle = "#0f380f";
     snake.forEach((segment, index) => {
-      ctx.fillRect(
-        segment.x * CELL_SIZE + 1,
-        segment.y * CELL_SIZE + 1,
-        CELL_SIZE - 2,
-        CELL_SIZE - 2
-      );
-      // Snake head slightly different
       if (index === 0) {
-        ctx.fillStyle = "#306230";
+        // Snake head - more distinct with eyes
         ctx.fillRect(
-          segment.x * CELL_SIZE + 4,
-          segment.y * CELL_SIZE + 4,
-          CELL_SIZE - 8,
-          CELL_SIZE - 8
+          segment.x * CELL_SIZE + 1,
+          segment.y * CELL_SIZE + 1,
+          CELL_SIZE - 2,
+          CELL_SIZE - 2
         );
+        // Eyes based on direction
+        ctx.fillStyle = "#306230";
+        if (direction.x === 1) { // Right
+          ctx.fillRect(segment.x * CELL_SIZE + 12, segment.y * CELL_SIZE + 6, 3, 3);
+          ctx.fillRect(segment.x * CELL_SIZE + 12, segment.y * CELL_SIZE + 11, 3, 3);
+        } else if (direction.x === -1) { // Left
+          ctx.fillRect(segment.x * CELL_SIZE + 5, segment.y * CELL_SIZE + 6, 3, 3);
+          ctx.fillRect(segment.x * CELL_SIZE + 5, segment.y * CELL_SIZE + 11, 3, 3);
+        } else if (direction.y === -1) { // Up
+          ctx.fillRect(segment.x * CELL_SIZE + 6, segment.y * CELL_SIZE + 5, 3, 3);
+          ctx.fillRect(segment.x * CELL_SIZE + 11, segment.y * CELL_SIZE + 5, 3, 3);
+        } else { // Down
+          ctx.fillRect(segment.x * CELL_SIZE + 6, segment.y * CELL_SIZE + 12, 3, 3);
+          ctx.fillRect(segment.x * CELL_SIZE + 11, segment.y * CELL_SIZE + 12, 3, 3);
+        }
         ctx.fillStyle = "#0f380f";
+      } else {
+        // Body segments
+        ctx.fillRect(
+          segment.x * CELL_SIZE + 1,
+          segment.y * CELL_SIZE + 1,
+          CELL_SIZE - 2,
+          CELL_SIZE - 2
+        );
       }
     });
 
-    // Draw apple (red circle)
+    // Draw pixel-style apple
+    const appleX = apple.x * CELL_SIZE;
+    const appleY = apple.y * CELL_SIZE;
+    
+    // Apple body (red)
     ctx.fillStyle = "#ff0000";
-    ctx.beginPath();
-    ctx.arc(
-      apple.x * CELL_SIZE + CELL_SIZE / 2,
-      apple.y * CELL_SIZE + CELL_SIZE / 2,
-      CELL_SIZE / 2 - 2,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+    ctx.fillRect(appleX + 6, appleY + 8, 8, 8);
+    ctx.fillRect(appleX + 4, appleY + 10, 12, 4);
+    ctx.fillRect(appleX + 3, appleY + 11, 14, 2);
     
     // Apple highlight
     ctx.fillStyle = "#ff6666";
-    ctx.beginPath();
-    ctx.arc(
-      apple.x * CELL_SIZE + CELL_SIZE / 2 - 3,
-      apple.y * CELL_SIZE + CELL_SIZE / 2 - 3,
-      3,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+    ctx.fillRect(appleX + 7, appleY + 9, 2, 2);
+    
+    // Stem (brown)
+    ctx.fillStyle = "#8B4513";
+    ctx.fillRect(appleX + 10, appleY + 5, 2, 4);
+    
+    // Leaf (green)
+    ctx.fillStyle = "#228B22";
+    ctx.fillRect(appleX + 11, appleY + 4, 3, 2);
+    ctx.fillRect(appleX + 12, appleY + 3, 2, 2);
   };
 
   // Game loop
@@ -144,11 +160,11 @@ const SnakeGame = () => {
           y: prevSnake[0].y + direction.y,
         };
 
-        // Check wall collision
-        if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
-          setGameOver(true);
-          return prevSnake;
-        }
+        // Wall wrapping mechanic (Gameboy style)
+        if (newHead.x < 0) newHead.x = GRID_SIZE - 1;
+        if (newHead.x >= GRID_SIZE) newHead.x = 0;
+        if (newHead.y < 0) newHead.y = GRID_SIZE - 1;
+        if (newHead.y >= GRID_SIZE) newHead.y = 0;
 
         // Check self collision
         if (prevSnake.some((segment) => segment.x === newHead.x && segment.y === newHead.y)) {
@@ -206,6 +222,14 @@ const SnakeGame = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleMobileControl = (dir: Position) => {
+    if (dir.x !== 0 && direction.x === 0) {
+      setDirection(dir);
+    } else if (dir.y !== 0 && direction.y === 0) {
+      setDirection(dir);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center p-8">
       <div className="mb-8 text-center">
@@ -227,8 +251,38 @@ const SnakeGame = () => {
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="border-8 border-gray-800 rounded"
+          className="border-8 border-gray-800 rounded mb-4"
         />
+        
+        {/* Mobile Gameboy-style controls */}
+        <div className="flex flex-col items-center gap-2 md:hidden">
+          <button
+            onClick={() => handleMobileControl({ x: 0, y: -1 })}
+            className="w-16 h-16 bg-gray-800 border-4 border-gray-600 rounded text-toxic-green font-pixel text-2xl hover:bg-gray-700 active:bg-gray-900"
+          >
+            ↑
+          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleMobileControl({ x: -1, y: 0 })}
+              className="w-16 h-16 bg-gray-800 border-4 border-gray-600 rounded text-toxic-green font-pixel text-2xl hover:bg-gray-700 active:bg-gray-900"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => handleMobileControl({ x: 0, y: 1 })}
+              className="w-16 h-16 bg-gray-800 border-4 border-gray-600 rounded text-toxic-green font-pixel text-2xl hover:bg-gray-700 active:bg-gray-900"
+            >
+              ↓
+            </button>
+            <button
+              onClick={() => handleMobileControl({ x: 1, y: 0 })}
+              className="w-16 h-16 bg-gray-800 border-4 border-gray-600 rounded text-toxic-green font-pixel text-2xl hover:bg-gray-700 active:bg-gray-900"
+            >
+              →
+            </button>
+          </div>
+        </div>
 
         {gameOver && (
           <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded">
@@ -246,7 +300,7 @@ const SnakeGame = () => {
       </div>
 
       {showJobPopup && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 animate-fade-in">
           <div className="relative max-w-4xl w-full mx-4">
             <button
               onClick={() => {
@@ -254,14 +308,14 @@ const SnakeGame = () => {
                 setIsPaused(false);
                 document.getElementById('click-me-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="absolute -top-12 right-0 text-white hover:text-red-500 transition-colors z-10"
+              className="absolute -top-4 -right-4 md:-top-12 md:right-0 w-12 h-12 md:w-16 md:h-16 bg-red-600 hover:bg-red-700 border-4 border-gray-800 rounded-lg flex items-center justify-center text-white font-pixel text-2xl md:text-4xl shadow-lg hover:scale-110 transition-all z-10 cursor-pointer"
             >
-              <span className="text-5xl font-bold cursor-pointer hover:scale-110 transition-transform inline-block">✖</span>
+              ✖
             </button>
             <img
               src={jobAppImage}
               alt="Job Application"
-              className="w-full h-auto rounded-lg shadow-2xl border-4 border-toxic-green"
+              className="w-full h-auto rounded-lg shadow-2xl border-4 border-toxic-green cursor-pointer"
               onClick={() => {
                 setShowJobPopup(false);
                 setIsPaused(false);

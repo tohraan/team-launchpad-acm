@@ -301,14 +301,14 @@ const SnakeGame = () => {
 
       {showJobPopup && (
         <div 
-          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 animate-fade-in"
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 animate-fade-in p-4"
           onClick={() => {
             setShowJobPopup(false);
             setIsPaused(false);
             document.getElementById('click-me-section')?.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          <div className="relative max-w-4xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
             <img
               src={jobAppImage}
               alt="Job Application"
@@ -320,7 +320,7 @@ const SnakeGame = () => {
                 setIsPaused(false);
                 document.getElementById('click-me-section')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="absolute top-4 right-4 w-14 h-14 md:w-16 md:h-16 bg-toxic-green hover:bg-green-400 border-4 border-gray-900 rounded flex items-center justify-center text-gray-900 font-pixel text-3xl md:text-4xl shadow-2xl hover:scale-110 transition-all cursor-pointer"
+              className="absolute top-4 right-4 w-12 h-12 md:w-14 md:h-14 bg-toxic-green hover:bg-green-400 border-4 border-gray-900 rounded flex items-center justify-center text-gray-900 font-pixel text-2xl md:text-3xl shadow-2xl hover:scale-110 transition-all cursor-pointer"
               style={{ boxShadow: '0 0 20px rgba(155, 188, 15, 0.8)' }}
             >
               ✖

@@ -20,6 +20,7 @@ const SnakeGame = () => {
   const [appleCount, setAppleCount] = useState(0);
   const [displayCount, setDisplayCount] = useState(0);
   const [showJobPopup, setShowJobPopup] = useState(false);
+  const [showResumeOverlay, setShowResumeOverlay] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [gameTime, setGameTime] = useState(0);
   const [triggerAppleCount] = useState(() => Math.floor(Math.random() * 6) + 1); // Random 1-6
@@ -297,6 +298,24 @@ const SnakeGame = () => {
             </div>
           </div>
         )}
+
+        {showResumeOverlay && !gameOver && (
+          <div className="absolute inset-0 bg-black/90 flex items-center justify-center rounded">
+            <div className="text-center p-8">
+              <h2 className="font-pixel text-2xl md:text-3xl text-toxic-green mb-6 animate-pulse">GAME PAUSED</h2>
+              <button
+                onClick={() => {
+                  setShowResumeOverlay(false);
+                  setIsPaused(false);
+                }}
+                className="px-8 py-4 bg-toxic-green text-gray-900 font-pixel text-xl hover:bg-green-400 rounded border-4 border-gray-800 shadow-lg hover:scale-105 transition-all"
+                style={{ boxShadow: '0 0 20px rgba(155, 188, 15, 0.6)' }}
+              >
+                ▶ RESUME GAME
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showJobPopup && (
@@ -304,8 +323,7 @@ const SnakeGame = () => {
           className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 animate-fade-in p-4"
           onClick={() => {
             setShowJobPopup(false);
-            setIsPaused(false);
-            document.getElementById('click-me-section')?.scrollIntoView({ behavior: 'smooth' });
+            setShowResumeOverlay(true);
           }}
         >
           <div className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
@@ -317,8 +335,7 @@ const SnakeGame = () => {
             <button
               onClick={() => {
                 setShowJobPopup(false);
-                setIsPaused(false);
-                document.getElementById('click-me-section')?.scrollIntoView({ behavior: 'smooth' });
+                setShowResumeOverlay(true);
               }}
               className="absolute top-4 right-4 w-12 h-12 md:w-14 md:h-14 bg-toxic-green hover:bg-green-400 border-4 border-gray-900 rounded flex items-center justify-center text-gray-900 font-pixel text-2xl md:text-3xl shadow-2xl hover:scale-110 transition-all cursor-pointer"
               style={{ boxShadow: '0 0 20px rgba(155, 188, 15, 0.8)' }}
